@@ -77,16 +77,18 @@ class CustomerGarmentsCreateDelete(generics.RetrieveUpdateDestroyAPIView):
         garment = Garment.objects.get(pk=request.data['garment'])
 
         # update if already exists
-        bought_garment = BoughtGarments.objects.get(customer=customer, garment=garment)
-        if bought_garment:
+        try:
+            bought_garment = BoughtGarments.objects.get(customer=customer, garment=garment)
             bought_garment.year = request.data['year']
             bought_garment.review = request.data['review']
             bought_garment.save()
             return Response(status=status.HTTP_200_OK)
-
-        # create if not exists
-        BoughtGarments.objects.create(customer=customer, garment=garment, year=request.data['year'], review=request.data['review'])
-        return Response(status=status.HTTP_201_CREATED)
+        except BoughtGarments.DoesNotExist:
+            # create if not exists
+            new_bought_garment = BoughtGarments.objects.create(customer=customer, garment=garment,
+                                                               year=request.data['year'], review=request.data['review'])
+            new_bought_garment.save()
+            return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, *args, **kwargs):
         customer = Customer.objects.get(pk=pk)
@@ -104,17 +106,19 @@ class GarmentsCustomerCreateDelete(generics.RetrieveUpdateDestroyAPIView):
         garment = Garment.objects.get(pk=pk)
         customer = Customer.objects.get(pk=request.data['customer'])
 
-        # update if already exists
-        bought_garment = BoughtGarments.objects.get(customer=customer, garment=garment)
-        if bought_garment:
+        try:
+            # update if already exists
+            bought_garment = BoughtGarments.objects.get(customer=customer, garment=garment)
             bought_garment.year = request.data['year']
             bought_garment.review = request.data['review']
             bought_garment.save()
             return Response(status=status.HTTP_200_OK)
-
-        # create if not exists
-        BoughtGarments.objects.create(customer=customer, garment=garment, year=request.data['year'], review=request.data['review'])
-        return Response(status=status.HTTP_201_CREATED)
+        except BoughtGarments.DoesNotExist:
+            # create if not exists
+            new_bought_garment = BoughtGarments.objects.create(customer=customer, garment=garment,
+                                                               year=request.data['year'], review=request.data['review'])
+            new_bought_garment.save()
+            return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, *args, **kwargs):
         garment = Garment.objects.get(pk=pk)
