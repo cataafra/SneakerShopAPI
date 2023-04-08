@@ -72,7 +72,8 @@ class GarmentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class CustomerList(generics.ListCreateAPIView):
     serializer_class = CustomerSerializer
-    queryset = Customer.objects.all()
+    queryset = Customer.objects.all().order_by('id')
+    pagination_class = PageNumberPagination
 
 
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
