@@ -11,9 +11,16 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class SneakerSerializer(serializers.ModelSerializer):
+    brand_name = BrandSerializer(read_only=True)
+
     class Meta:
         model = Sneaker
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['brand_name'] = BrandSerializer(instance.brand).data["name"]
+        return representation
 
 
 class SneakerSerializerAvgPrice(serializers.ModelSerializer):
