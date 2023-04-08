@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .models import *
@@ -9,6 +10,7 @@ from .serializers import *
 class BrandList(generics.ListCreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
+    pagination_class = PageNumberPagination
 
 
 class BrandDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -17,6 +19,7 @@ class BrandDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SneakerList(generics.ListCreateAPIView):
+    pagination_class = PageNumberPagination
     def get_serializer_class(self):
         if self.request.query_params.get('brand-avg-price'):
             return SneakerSerializerAvgPrice
@@ -54,6 +57,7 @@ class SneakerDetail(generics.RetrieveUpdateDestroyAPIView):
 class GarmentList(generics.ListCreateAPIView):
     queryset = Garment.objects.all()
     serializer_class = GarmentSerializer
+    pagination_class = PageNumberPagination
 
 
 class GarmentDetail(generics.RetrieveUpdateDestroyAPIView):
