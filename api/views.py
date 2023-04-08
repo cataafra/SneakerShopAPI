@@ -9,7 +9,7 @@ from .serializers import *
 # Create your views here.
 class BrandList(generics.ListCreateAPIView):
     serializer_class = BrandSerializer
-    queryset = Brand.objects.all()
+    queryset = Brand.objects.all().order_by('id')
     pagination_class = PageNumberPagination
 
 
@@ -26,7 +26,7 @@ class SneakerList(generics.ListCreateAPIView):
         return SneakerSerializer
 
     def get_queryset(self):
-        queryset = Sneaker.objects.all()
+        queryset = Sneaker.objects.all().order_by('id')
         brand = self.request.query_params.get('brand')
         price = self.request.query_params.get('min-price')
         order_by_avg_price_per_brand = self.request.query_params.get('brand-avg-price')
@@ -55,7 +55,7 @@ class SneakerDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GarmentList(generics.ListCreateAPIView):
-    queryset = Garment.objects.all()
+    queryset = Garment.objects.all().order_by('id')
     serializer_class = GarmentSerializer
     pagination_class = PageNumberPagination
 
