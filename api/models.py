@@ -25,7 +25,7 @@ class Sneaker(models.Model):
 
 
 class Garment(models.Model):
-    style = models.CharField(max_length=100, unique=True)
+    style = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
     size = models.CharField(max_length=15)
