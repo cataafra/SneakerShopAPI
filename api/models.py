@@ -12,7 +12,7 @@ class Brand(models.Model):
 
 
 class Sneaker(models.Model):
-    style = models.CharField(max_length=100, unique=True)
+    style = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
