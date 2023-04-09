@@ -41,7 +41,7 @@ class SneakerList(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=True)
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
