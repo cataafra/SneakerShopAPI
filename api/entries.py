@@ -24,17 +24,17 @@ for brand in brands:
 
 # Create 10 Sneakers with relevant data and several brands
 sneakers = [
-    Sneaker(style='Air Force 1', price=100, quantity=10, brand=Brand.objects.get(name='Nike'), size=10),
+    Sneaker(style='Air Force 1', price=100, quantity=15, brand=Brand.objects.get(name='Nike'), size=10),
     Sneaker(style='Air Max 90', price=120, quantity=10, brand=Brand.objects.get(name='Nike'), size=10),
-    Sneaker(style='Air Max 95', price=130, quantity=10, brand=Brand.objects.get(name='Nike'), size=10),
-    Sneaker(style='Air Max 97', price=140, quantity=10, brand=Brand.objects.get(name='Nike'), size=10),
+    Sneaker(style='Air Max 95', price=130, quantity=11, brand=Brand.objects.get(name='Nike'), size=10),
+    Sneaker(style='Air Max 97', price=140, quantity=12, brand=Brand.objects.get(name='Nike'), size=10),
     Sneaker(style='Air Max 270', price=150, quantity=10, brand=Brand.objects.get(name='Nike'), size=10),
     Sneaker(style='Stan Smith', price=100, quantity=10, brand=Brand.objects.get(name='Adidas'), size=10),
-    Sneaker(style='Yeezy Boost 350', price=120, quantity=10, brand=Brand.objects.get(name='Adidas'), size=10),
-    Sneaker(style='Yeezy Boost 700', price=130, quantity=10, brand=Brand.objects.get(name='Adidas'), size=10),
-    Sneaker(style='Supreme x Nike Air Force 1', price=100, quantity=10, brand=Brand.objects.get(name='Supreme'), size=10),
-    Sneaker(style='Off-White x Nike Air Force 1', price=100, quantity=10, brand=Brand.objects.get(name='Off-White'), size=10),
-    Sneaker(style='Rihanna Creeper', price=100, quantity=10, brand=Brand.objects.get(name='Puma'), size=10),
+    Sneaker(style='Yeezy Boost 350', price=220, quantity=3, brand=Brand.objects.get(name='Adidas'), size=10),
+    Sneaker(style='Yeezy Boost 700', price=230, quantity=7, brand=Brand.objects.get(name='Adidas'), size=10),
+    Sneaker(style='Air Force 1', price=100, quantity=10, brand=Brand.objects.get(name='Supreme'), size=10),
+    Sneaker(style='Air Force 1', price=100, quantity=10, brand=Brand.objects.get(name='Off-White'), size=10),
+    Sneaker(style='Rihanna Creeper', price=200, quantity=10, brand=Brand.objects.get(name='Puma'), size=10),
     Sneaker(style='Rihanna Fenty', price=120, quantity=10, brand=Brand.objects.get(name='Puma'), size=10)
 ]
 
