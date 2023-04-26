@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 CSFR_TRUSTED_ORIGINS = ['https://afrastudios.xyz/']
-SECURE_SSL_REDIRECT=False
+SECURE_SSL_REDIRECT=True
 SESSION_COOKIE_SECURE=False
 CSRF_COOKIE_SECURE=False
 
@@ -89,8 +89,12 @@ WSGI_APPLICATION = 'my_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+	'USER': 'cataafra',
+	'PASSWORD': 'Afrapass2002',
+	'HOST': 'ss-database.cwkggqjssx2k.eu-north-1.rds.amazonaws.com',
+	'PORT': '5432',
     }
 }
 
