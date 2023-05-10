@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'my_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'NAME': 'sneakershopdb',
 	'USER': 'cataafra',
 	'PASSWORD': 'Afrapass2002',
-	'HOST': 'ss-database.cwkggqjssx2k.eu-north-1.rds.amazonaws.com',
-	'PORT': '5432',
+	'HOST': 'localhost',
+	'PORT': '',
     }
 }
 
