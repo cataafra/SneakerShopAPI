@@ -5,11 +5,6 @@ from .views import *
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -38,11 +33,4 @@ urlpatterns = [
     path('Customer/<int:pk>/', CustomerDetail.as_view(), name='customer-detail'),
     path('Customer/<int:pk>/Garment/', CustomerGarmentsCreateDelete.as_view(), name='customer-garment'),
     path('Garment/<int:pk>/Customer/', GarmentsCustomerCreateDelete.as_view(), name='garment-customer'),
-
-    # auth
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('register/', RegisterView.as_view(), name='register'),
-    path('register/confirm/<str:token>/', ConfirmRegistrationView.as_view(), name='confirm'),
 ]
