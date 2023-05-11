@@ -30,5 +30,7 @@ urlpatterns = [
     path('Customer/', CustomerList.as_view(), name='customer-list'),
     path('Customer/<int:pk>/', CustomerDetail.as_view(), name='customer-detail'),
     path('Customer/<int:pk>/Garment/', CustomerGarmentsCreateDelete.as_view(), name='customer-garment'),
-    path('Garment/<int:pk>/Customer/', GarmentsCustomerCreateDelete.as_view(), name='garment-customer')
+    path('Garment/<int:pk>/Customer/', GarmentsCustomerCreateDelete.as_view(), name='garment-customer'),
+    path('token/', TokenView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', RefreshView.as_view(), name='token_refresh'),
 ]

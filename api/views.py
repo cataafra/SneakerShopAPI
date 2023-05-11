@@ -3,6 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .models import *
 from .serializers import *
@@ -10,6 +11,12 @@ from .serializers import *
 from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title='Pastebin API')
+
+class TokenView(TokenObtainPairView):
+    serializer_class = TokenObtainPairSerializer
+
+class RefreshView(TokenRefreshView):
+    pass
 
 
 # Create your views here.
