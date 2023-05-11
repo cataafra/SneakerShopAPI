@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
+    'rest_framework_simplejwt',
     'django_extensions',
     "corsheaders",
     'drf_yasg',
     "sslserver",
-    "rest_framework_simplejwt.token_blacklist",
 ]
 
 MIDDLEWARE = [
@@ -89,10 +89,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sneakershopdb',
-	'USER': 'cataafra',
-	'PASSWORD': 'Afrapass2002',
-	'HOST': 'localhost',
-	'PORT': '',
+        'USER': 'cataafra',
+        'PASSWORD': 'Afrapass2002',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -141,9 +141,9 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 12,
-    'DEFAULT_AUTHENTIFICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    )
 }
 
 SIMPLE_JWT = {

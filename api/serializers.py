@@ -1,44 +1,41 @@
-from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from django.db.models import Avg
-from django.contrib.auth import authenticate
+
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import *
 
-class TokenObtainPairSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
-    access = serializers.CharField(read_only=True)
-    refresh = serializers.CharField(read_only=True)
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
 
-    def validate(self, attrs):
-        username = attrs.get('username')
-        password = attrs.get('password')
-
-        user = authenticate(request=self.context.get('request'),
-                            username=username, password=password)
-
-        if not user:
-            msg = 'Unable to log in with provided credentials. Please try again.'
-            raise serializers.ValidationError(msg, code='authorization')
-
-        refresh = RefreshToken.for_user(user)
-
-        data = {
-            'username': user.username,
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'password2')
+        extra_kwargs = {
+            'username': {'required': True},
         }
 
-        return data
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
 
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username']
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = '__all__'
-
 
 class SneakerSerializer(serializers.ModelSerializer):
     brand_name = BrandSerializer(read_only=True)
