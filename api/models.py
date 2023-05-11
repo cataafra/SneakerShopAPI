@@ -21,7 +21,7 @@ class Sneaker(models.Model):
     date_added = models.DateField(auto_now_add=True)
 
     def __gt__(self, other):
-        return self.price > self.other
+        return self.price > other.price
 
 
 class Garment(models.Model):

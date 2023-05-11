@@ -26,8 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
-# CSFR_TRUSTED_ORIGINS = ['https://afrastudios.xyz/']
-SECURE_SSL_REDIRECT = False
+CSFR_TRUSTED_ORIGINS = ['https://afrastudios.xyz/']
+SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django_extensions',
     "corsheaders",
     'drf_yasg',
-    "sslserver",
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -90,8 +90,8 @@ DATABASES = {
         'NAME': 'sneakershopdb',
 	'USER': 'cataafra',
 	'PASSWORD': 'Afrapass2002',
-	'HOST': 'localhost',
-	'PORT': '',
+	'HOST': '16.170.29.78',
+	'PORT': '5432',
     }
 }
 
