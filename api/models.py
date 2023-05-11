@@ -28,7 +28,7 @@ class Brand(models.Model):
     motto = models.CharField(max_length=100)
 
     date_added = models.DateField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
 
 class Sneaker(models.Model):
     style = models.CharField(max_length=100)
@@ -38,7 +38,7 @@ class Sneaker(models.Model):
     size = models.PositiveIntegerField()
 
     date_added = models.DateField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,default=1, on_delete=models.CASCADE)
 
     def __gt__(self, other):
         return self.price > self.other
@@ -50,7 +50,7 @@ class Garment(models.Model):
     size = models.CharField(max_length=15)
 
     date_added = models.DateField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,default=1, on_delete=models.CASCADE)
 
 class Customer(models.Model):
     name = models.CharField(max_length=25)
@@ -58,7 +58,7 @@ class Customer(models.Model):
     date_added = models.DateField(auto_now_add=True)
     garments_bought = models.ManyToManyField(Garment, through='BoughtGarments')
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,default=1, on_delete=models.CASCADE)
 
 class BoughtGarments(models.Model):
     garment = models.ForeignKey(Garment, on_delete=models.CASCADE)
