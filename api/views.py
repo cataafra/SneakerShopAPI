@@ -1,15 +1,71 @@
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from django.conf.urls import url
-from rest_framework_swagger.views import get_swagger_view
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.tokens import TokenError, UntypedToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 
 from .models import *
 from .serializers import *
 
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework import generics, permissions, status, views
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
+from rest_framework import status, permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 schema_view = get_swagger_view(title='Pastebin API')
+
+class RegisterView(APIView):
+    permission_classes = (permissions.AllowAny, )
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            if user:
+                # Create a refresh token
+                refresh = RefreshToken.for_user(user)
+
+                # Generate a confirmation token
+                confirmation_token = str(refresh.access_token)
+
+                return Response({"confirmation_token": confirmation_token}, status=status.HTTP_201_CREATED)
+
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ConfirmRegistrationView(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, token):
+        try:
+            # decode the token
+            untyped_token = UntypedToken(token)
+
+            # get user_id from token
+            user_id = untyped_token['user_id']
+
+            # get the user
+            user = User.objects.get(id=user_id)
+
+            # activate user
+            user.is_active = True
+            user.save()
+
+            # blacklist token so it can't be used again
+            refresh = RefreshToken(token)
+            try:
+                # attempt to blacklist the refresh token
+                BlacklistedToken.objects.get(token=refresh)
+            except BlacklistedToken.DoesNotExist:
+                BlacklistedToken.objects.create(token=refresh)
+
+            return Response(status=status.HTTP_200_OK)
+
+        except (TokenError, User.DoesNotExist):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 # Create your views here.
