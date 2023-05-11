@@ -86,8 +86,12 @@ WSGI_APPLICATION = 'my_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sneakershopdb',
+	'USER': 'cataafra',
+	'PASSWORD': 'Afrapass2002',
+	'HOST': 'localhost',
+	'PORT': '',
     }
 }
 
