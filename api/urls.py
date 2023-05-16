@@ -40,9 +40,9 @@ urlpatterns = [
     # auth
     path('user/register/', UserRegistrationView.as_view(), name='user-register'),
     path('user/activate/<uuid:confirmation_code>/', UserActivationView.as_view(), name='user-activate'),
-    path('profile/', UserProfileList.as_view(), name='profile_list'),
-    path('profile/<int:pk>/', UserProfileDetail.as_view(), name='profile_detail'),
+    path('user/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-role'),
+    path('UserProfile/', UserProfileList.as_view(), name='profile_list'),
+    path('UserProfile/<int:pk>/', UserProfileDetail.as_view(), name='profile_detail'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('user/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-role'),
 ]

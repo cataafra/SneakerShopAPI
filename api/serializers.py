@@ -154,7 +154,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop("user")
-        user = User.objects.create_user(**user_data)
+        user = User.objects.create_user(**user_data, is_active=False)
         user_profile = UserProfile.objects.create(user=user, **validated_data)
         return user_profile
 

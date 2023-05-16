@@ -1,9 +1,11 @@
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
+from django.utils import timezone
 import uuid
 
 from .serializers import *
@@ -168,6 +170,7 @@ class UserRegistrationView(generics.CreateAPIView):
         data["activation_code"] = activation_code
         data["activation_expiry_date"] = activation_expiry_date
         data["active"] = False
+        data["is_active"] = False
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -193,18 +196,35 @@ class UserActivationView(generics.GenericAPIView):
 
         user_profile.user.is_active = True
         user_profile.active = True
+        user_profile.save()
         user_profile.user.save()
         return Response({"success": "User profile activated"}, status=status.HTTP_200_OK)
 
 
 # user roles
-class EntityCreateView(generics.CreateAPIView):
-    permission_classes = [IsRegularUser]
-
-class EntityUpdateView(generics.UpdateAPIView):
-    permission_classes = [IsModeratorUser]
 
 class UserRolesEditView(generics.UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserRoleUpdateSerializer
     permission_classes = [IsAdminUser]
+
+
+class UserView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+class AdminView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+class ModeratorView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsModeratorUser]
+
+class RegularUserView(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsRegularUser]
