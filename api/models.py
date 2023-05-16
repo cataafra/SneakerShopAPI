@@ -1,4 +1,7 @@
 import random
+
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, AbstractUser
 from django.db import models
 
 
@@ -50,4 +53,7 @@ class BoughtGarments(models.Model):
     class Meta:
         unique_together = [['garment', 'customer']]
         ordering = ['customer']
+
+
+
 

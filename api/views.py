@@ -1,20 +1,18 @@
-from rest_framework import generics, status
+import jwt
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from rest_framework_simplejwt.tokens import TokenError, UntypedToken
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-
-from .models import *
-from .serializers import *
-
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework import generics, permissions, status, views
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
-from rest_framework import status, permissions
+from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from django.utils.encoding import force_text, force_bytes
+import uuid
+
+from .serializers import *
 
 schema_view = get_swagger_view(title='Pastebin API')
 
@@ -151,10 +149,6 @@ class GarmentsCustomerCreateDelete(generics.RetrieveUpdateDestroyAPIView):
         bought_garment = BoughtGarments.objects.get(customer=customer, garment=garment)
         bought_garment.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
-
-
-
-
 
 
 

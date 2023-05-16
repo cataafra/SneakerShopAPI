@@ -1,4 +1,3 @@
-from django.contrib.auth.password_validation import validate_password
 from django.db.models import Avg
 
 from rest_framework import serializers
@@ -128,5 +127,8 @@ class GarmentSerializerDetailed(serializers.ModelSerializer):
     def get_avg_age(self, obj):
         avg_age = obj.boughtgarments_set.aggregate(Avg('customer__age'))['customer__age__avg']
         return avg_age if avg_age else 0
+
+
+
 
 
