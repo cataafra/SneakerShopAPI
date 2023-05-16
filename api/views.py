@@ -1,20 +1,16 @@
-import jwt
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.core.mail import send_mail
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
-from django.utils.encoding import force_text, force_bytes
+from datetime import timedelta
 import uuid
 
 from .serializers import *
+from .permissions import *
 
 schema_view = get_swagger_view(title='Pastebin API')
+
 
 # Create your views here.
 class BrandList(generics.ListCreateAPIView):
@@ -30,6 +26,7 @@ class BrandDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class SneakerList(generics.ListCreateAPIView):
     pagination_class = PageNumberPagination
+
     def get_serializer_class(self):
         if self.request.query_params.get('brand-avg-price'):
             return SneakerSerializerAvgPrice
@@ -151,9 +148,63 @@ class GarmentsCustomerCreateDelete(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
+# authentication
+class UserProfileList(generics.ListCreateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+class UserRegistrationView(generics.CreateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def create(self, request, *args, **kwargs):
+        activation_expiry_date = timezone.now() + timedelta(minutes=10)
+        activation_code = str(uuid.uuid4())
+        data = request.data.copy()
+        data["activation_code"] = activation_code
+        data["activation_expiry_date"] = activation_expiry_date
+        data["active"] = False
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({"activation_code": activation_code}, status=status.HTTP_201_CREATED, headers=headers)
+
+class UserActivationView(generics.GenericAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def get(self, request, confirmation_code):
+        try:
+            user_profile = UserProfile.objects.get(activation_code=confirmation_code)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "Activation code not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user_profile.activation_expiry_date < timezone.now():
+            return Response({"error": "Activation code expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user_profile.user.is_active:
+            return Response({"success": "Account already active"}, status=status.HTTP_200_OK)
+
+        user_profile.user.is_active = True
+        user_profile.active = True
+        user_profile.user.save()
+        return Response({"success": "User profile activated"}, status=status.HTTP_200_OK)
 
 
+# user roles
+class EntityCreateView(generics.CreateAPIView):
+    permission_classes = [IsRegularUser]
 
+class EntityUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsModeratorUser]
 
-
-
+class UserRolesEditView(generics.UpdateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserRoleUpdateSerializer
+    permission_classes = [IsAdminUser]

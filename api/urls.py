@@ -1,6 +1,4 @@
-from django.contrib import admin
-from django.urls import path, include, re_path
-from django.conf.urls import url
+from django.urls import path, re_path
 from .views import *
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -14,6 +12,11 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
+)
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
 )
 
 urlpatterns = [
@@ -33,4 +36,13 @@ urlpatterns = [
     path('Customer/<int:pk>/', CustomerDetail.as_view(), name='customer-detail'),
     path('Customer/<int:pk>/Garment/', CustomerGarmentsCreateDelete.as_view(), name='customer-garment'),
     path('Garment/<int:pk>/Customer/', GarmentsCustomerCreateDelete.as_view(), name='garment-customer'),
+
+    # auth
+    path('user/register/', UserRegistrationView.as_view(), name='user-register'),
+    path('user/activate/<uuid:confirmation_code>/', UserActivationView.as_view(), name='user-activate'),
+    path('profile/', UserProfileList.as_view(), name='profile_list'),
+    path('profile/<int:pk>/', UserProfileDetail.as_view(), name='profile_detail'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('user/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-role'),
 ]

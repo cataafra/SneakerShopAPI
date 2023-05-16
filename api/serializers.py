@@ -3,6 +3,7 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from .models import *
+from django.contrib.auth.models import User
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
@@ -129,6 +130,61 @@ class GarmentSerializerDetailed(serializers.ModelSerializer):
         return avg_age if avg_age else 0
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "password"]
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            "user",
+            "bio",
+            "location",
+            "gender",
+            "marital",
+            "activation_code",
+            "activation_expiry_date",
+            "active",
+        )
+
+    def create(self, validated_data):
+        user_data = validated_data.pop("user")
+        user = User.objects.create_user(**user_data)
+        user_profile = UserProfile.objects.create(user=user, **validated_data)
+        return user_profile
+
+
+class UserProfileSerializerDetailed(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = UserProfile
+        fields = ("user",
+                  "bio",
+                  "location",
+                  "gender",
+                  "marital",
+                  "role",
+                  )
+
+
+class UserActivationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['activation_code']
+
+
+class UserRoleUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ["role"]
+
+    def update(self, instance, validated_data):
+        instance.role = validated_data.get('role', instance.role)
+        instance.save()
+        return instance
 

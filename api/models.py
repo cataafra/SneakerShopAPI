@@ -1,8 +1,5 @@
-import random
-
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractBaseUser, AbstractUser
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Brand(models.Model):
@@ -55,5 +52,22 @@ class BoughtGarments(models.Model):
         ordering = ['customer']
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="profile", to_field="username"
+    )
+    bio = models.TextField(max_length=500)
+    location = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10, choices=(("m", "Male"), ("f", "Female"), ("o", "Other")))
+    marital = models.CharField(max_length=20, choices=(("s", "Single"), ("m", "Married")))
+    activation_code = models.CharField(max_length=36, default="123")
+    activation_expiry_date = models.DateTimeField()
+    active = models.BooleanField()
+    role = models.CharField(max_length=10, choices=(
+        ("regular", "Regular"), ("moderator", "Moderator"), ("admin", "Admin")),
+                            default="regular")
+    page_size = models.IntegerField(choices=((25, 25), (50, 50), (100, 100)), default=100, )
 
+    def __str__(self):
+        return self.user.username
 
