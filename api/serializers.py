@@ -142,15 +142,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ("user", "bio", "location", "gender", "marital_status", "role", "active", "activation_code", "activation_expiry_date")
-        extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True}, "activation_code": {"required": False}, "activation_expiry_date": {"required": False}}
+        fields = ("user", "bio", "location", "gender", "marital_status", "role", "active", "activation_code", "activation_expiry_date", "page_size")
+        extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True}, "activation_code": {"required": False}, "activation_expiry_date": {"required": False}, "page_size": {"required": False}}
 
     def to_internal_value(self, data):
-        user_data = {
-            'username': data.pop('username'),
-            'password': data.pop('password')
-        }
-        data['user'] = user_data
+        user_data = {}
+        if 'username' in data:
+            user_data['username'] = data.pop('username')
+        if 'password' in data:
+            user_data['password'] = data.pop('password')
+        if user_data:
+            data['user'] = user_data
         return super().to_internal_value(data)
 
     def create(self, validated_data):
@@ -159,7 +161,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**user_data, is_active=False)
         validated_data['user'] = user
         return super().create(validated_data)
-
 
 
 class UserActivationSerializer(serializers.ModelSerializer):
