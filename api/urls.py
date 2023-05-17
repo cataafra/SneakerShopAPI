@@ -47,6 +47,6 @@ urlpatterns = [
     # user profile
     path('UserProfile/', UserProfileList.as_view(), name='profile_list'),
     path('UserProfile/<str:username>/', UserProfileDetail.as_view(), name='profile_detail'),
-    path('UserProfile/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-profile-role'),
-    path('UserProfile/me/', CurrentUserView.as_view(), name='current_user'),
+    path('UserProfile/<str:username>/editrole/', UserRolesEditView.as_view(), name='edit-user-profile-role'),
+    path('CurrentUser/', CurrentUserView.as_view(), name='current_user'),
 ]
