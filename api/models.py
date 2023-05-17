@@ -63,10 +63,10 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile", to_field="username"
     )
-    bio = models.TextField(max_length=500)
-    location = models.CharField(max_length=50)
-    gender = models.CharField(max_length=10, choices=(("m", "Male"), ("f", "Female"), ("o", "Other")))
-    marital_status = models.CharField(max_length=20, choices=(("s", "Single"), ("m", "Married")))
+    bio = models.TextField(max_length=50, default="No bio.")
+    location = models.CharField(max_length=50, default="No location.")
+    gender = models.CharField(max_length=10, choices=(("m", "Male"), ("f", "Female"), ("o", "Other")), default="o")
+    marital_status = models.CharField(max_length=20, choices=(("s", "Single"), ("m", "Married")), default="s")
 
     activation_code = models.CharField(max_length=36, null=True)
     activation_expiry_date = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=30))
