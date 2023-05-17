@@ -1,3 +1,4 @@
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework_swagger.views import get_swagger_view
@@ -177,6 +178,11 @@ class UserProfileList(generics.ListCreateAPIView):
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        username = self.kwargs.get("username")
+        obj = get_object_or_404(UserProfile, user__username=username)
+        return obj
 
 class UserRegistrationView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
