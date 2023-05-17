@@ -38,11 +38,15 @@ urlpatterns = [
     path('Garment/<int:pk>/Customer/', GarmentsCustomerCreateDelete.as_view(), name='garment-customer'),
 
     # auth
-    path('user/register/', UserRegistrationView.as_view(), name='user-register'),
-    path('user/activate/<uuid:confirmation_code>/', UserActivationView.as_view(), name='user-activate'),
-    path('user/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-role'),
-    path('UserProfile/', UserProfileList.as_view(), name='profile_list'),
-    path('UserProfile/<int:pk>/', UserProfileDetail.as_view(), name='profile_detail'),
+    path('register/', UserRegistrationView.as_view(), name='user-register'),
+    path('activate/<uuid:confirmation_code>/', UserActivationView.as_view(), name='user-activate'),
+    path('login/', TokenObtainPairView.as_view(), name='user-login'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # user profile
+    path('UserProfile/', UserProfileList.as_view(), name='profile_list'),
+    path('UserProfile/<int:pk>/', UserProfileDetail.as_view(), name='profile_detail'),
+    path('UserProfile/<int:pk>/editrole/', UserRolesEditView.as_view(), name='edit-user-profile-role'),
+    path('UserProfile/me/', CurrentUserView.as_view(), name='current_user'),
 ]

@@ -1,15 +1,20 @@
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 from rest_framework_swagger.views import get_swagger_view
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from datetime import timedelta, timezone, datetime
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from datetime import timedelta, timezone
 from django.utils import timezone
 import uuid
 
 from .serializers import *
 from .permissions import *
+from .pagination import CustomPagination
 
 schema_view = get_swagger_view(title='Pastebin API')
 
@@ -18,16 +23,22 @@ schema_view = get_swagger_view(title='Pastebin API')
 class BrandList(generics.ListCreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all().order_by('id')
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 
 class BrandDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
+
     serializer_class = BrandSerializerDetailed
     queryset = Brand.objects.all()
 
 
 class SneakerList(generics.ListCreateAPIView):
-    pagination_class = PageNumberPagination
+    permission_classes = [IsOwnerOrReadOnly]
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.request.query_params.get('brand-avg-price'):
@@ -59,17 +70,20 @@ class SneakerList(generics.ListCreateAPIView):
 
 
 class SneakerDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = SneakerSerializerDetailed
     queryset = Sneaker.objects.all()
 
 
 class GarmentList(generics.ListCreateAPIView):
+    permissions_classes = [IsAuthenticated, IsRegularUser]
     queryset = Garment.objects.all().order_by('id')
     serializer_class = GarmentSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
 
 
 class GarmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = GarmentSerializerDetailed
     queryset = Garment.objects.all()
 
@@ -80,17 +94,20 @@ class GarmentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CustomerList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated, IsRegularUser]
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all().order_by('id')
-    pagination_class = PageNumberPagination
+    pagination_class = CustomPagination
 
 
 class CustomerDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class = CustomerSerializerDetailed
     queryset = Customer.objects.all()
 
 
 class CustomerGarmentsCreateDelete(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
     serializer_class = BoughtGarmentsSerializer
     queryset = BoughtGarments.objects.all()
 
@@ -121,6 +138,7 @@ class CustomerGarmentsCreateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GarmentsCustomerCreateDelete(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = BoughtGarmentsSerializer
     queryset = BoughtGarments.objects.all()
 
@@ -170,13 +188,13 @@ class UserRegistrationView(generics.CreateAPIView):
         data["activation_code"] = activation_code
         data["activation_expiry_date"] = activation_expiry_date
         data["active"] = False
-        data["is_active"] = False
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({"activation_code": activation_code}, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class UserActivationView(generics.GenericAPIView):
     queryset = UserProfile.objects.all()
@@ -195,36 +213,24 @@ class UserActivationView(generics.GenericAPIView):
             return Response({"success": "Account already active"}, status=status.HTTP_200_OK)
 
         user_profile.user.is_active = True
+        user_profile.user.save()
+
         user_profile.active = True
         user_profile.save()
-        user_profile.user.save()
+
         return Response({"success": "User profile activated"}, status=status.HTTP_200_OK)
 
 
 # user roles
-
 class UserRolesEditView(generics.UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserRoleUpdateSerializer
     permission_classes = [IsAdminUser]
 
-
-class UserView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
-class AdminView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user.profile)
+        return Response(serializer.data)
 
-class ModeratorView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsModeratorUser]
-
-class RegularUserView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsRegularUser]
