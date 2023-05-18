@@ -5,10 +5,6 @@ from rest_framework_swagger.views import get_swagger_view
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 from datetime import timedelta, timezone
 from django.utils import timezone
 import uuid
@@ -172,11 +168,12 @@ class GarmentsCustomerCreateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 # authentication
 class UserProfileList(generics.ListCreateAPIView):
+    permissions_classes = [IsAdminUser]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 

@@ -144,7 +144,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     sneaker_count = serializers.SerializerMethodField()
     garment_count = serializers.SerializerMethodField()
     brand_count = serializers.SerializerMethodField()
-
+    customer_count = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -160,7 +160,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   "page_size",
                   "sneaker_count",
                   "garment_count",
-                  "brand_count")
+                  "brand_count",
+                  "customer_count",
+                  )
         extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True},
                         "activation_code": {"required": False}, "activation_expiry_date": {"required": False},
                         "page_size": {"required": False}}
@@ -190,6 +192,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_brand_count(self, obj):
         return Brand.objects.filter(created_by=obj.user).count()
+
+    def get_customer_count(self, obj):
+        return Customer.objects.filter(created_by=obj.user).count()
 
 
 class UserActivationSerializer(serializers.ModelSerializer):
