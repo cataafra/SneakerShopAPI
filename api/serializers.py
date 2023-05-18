@@ -5,10 +5,12 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
 
+
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = '__all__'
+
 
 class SneakerSerializer(serializers.ModelSerializer):
     brand_name = BrandSerializer(read_only=True)
@@ -29,7 +31,6 @@ class SneakerSerializerAvgPrice(serializers.ModelSerializer):
     class Meta:
         model = Sneaker
         fields = ['id', 'style', 'price', 'quantity', 'size', 'brand', 'brand_avg_price']
-
 
     def get_brand_avg_price(self, obj):
         return obj.brand.sneaker_set.aggregate(avg_price=Avg('price'))['avg_price']
@@ -108,7 +109,8 @@ class CustomerSerializerDetailed(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['bought_garments'] = BoughtGarmentsSerializer(instance.boughtgarments_set.all(), many=True, fields=('garment', 'year', 'review')).data
+        representation['bought_garments'] = BoughtGarmentsSerializer(instance.boughtgarments_set.all(), many=True,
+                                                                     fields=('garment', 'year', 'review')).data
         return representation
 
 
@@ -139,11 +141,29 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    sneaker_count = serializers.SerializerMethodField()
+    garment_count = serializers.SerializerMethodField()
+    brand_count = serializers.SerializerMethodField()
+
 
     class Meta:
         model = UserProfile
-        fields = ("user", "bio", "location", "gender", "marital_status", "role", "active", "activation_code", "activation_expiry_date", "page_size")
-        extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True}, "activation_code": {"required": False}, "activation_expiry_date": {"required": False}, "page_size": {"required": False}}
+        fields = ("user",
+                  "bio",
+                  "location",
+                  "gender",
+                  "marital_status",
+                  "role",
+                  "active",
+                  "activation_code",
+                  "activation_expiry_date",
+                  "page_size",
+                  "sneaker_count",
+                  "garment_count",
+                  "brand_count")
+        extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True},
+                        "activation_code": {"required": False}, "activation_expiry_date": {"required": False},
+                        "page_size": {"required": False}}
 
     def to_internal_value(self, data):
         user_data = {}
@@ -162,6 +182,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         validated_data['user'] = user
         return super().create(validated_data)
 
+    def get_sneaker_count(self, obj):
+        return Sneaker.objects.filter(created_by=obj.user).count()
+
+    def get_garment_count(self, obj):
+        return Garment.objects.filter(created_by=obj.user).count()
+
+    def get_brand_count(self, obj):
+        return Brand.objects.filter(created_by=obj.user).count()
+
 
 class UserActivationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -178,4 +207,3 @@ class UserRoleUpdateSerializer(serializers.ModelSerializer):
         instance.role = validated_data.get('role', instance.role)
         instance.save()
         return instance
-
