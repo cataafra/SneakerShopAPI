@@ -231,8 +231,6 @@ class UserRolesEditView(generics.UpdateAPIView):
     serializer_class = UserRoleUpdateSerializer
 
 class CurrentUserView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
         serializer = UserProfileSerializer(request.user.profile)
         return Response(serializer.data)

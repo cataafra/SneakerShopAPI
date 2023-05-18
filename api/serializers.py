@@ -161,7 +161,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   "sneaker_count",
                   "garment_count",
                   "brand_count",
-                  "customer_count",
+                  "customer_count"
                   )
         extra_kwargs = {"role": {"read_only": True}, "user.password": {"write_only": True},
                         "activation_code": {"required": False}, "activation_expiry_date": {"required": False},
