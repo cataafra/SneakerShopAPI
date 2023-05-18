@@ -231,6 +231,7 @@ class UserRolesEditView(generics.UpdateAPIView):
     serializer_class = UserRoleUpdateSerializer
 
 class CurrentUserView(APIView):
+
     def get(self, request):
         serializer = UserProfileSerializer(request.user.profile)
         return Response(serializer.data)
