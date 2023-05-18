@@ -185,16 +185,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def get_sneaker_count(self, obj):
-        return Sneaker.objects.filter(created_by=obj.user).count()
+        return Sneaker.objects.filter(created_by=obj).count()
 
     def get_garment_count(self, obj):
-        return Garment.objects.filter(created_by=obj.user).count()
+        return Garment.objects.filter(created_by=obj).count()
 
     def get_brand_count(self, obj):
-        return Brand.objects.filter(created_by=obj.user).count()
+        return Brand.objects.filter(created_by=obj).count()
 
     def get_customer_count(self, obj):
-        return Customer.objects.filter(created_by=obj.user).count()
+        return Customer.objects.filter(created_by=obj).count()
 
 
 class UserActivationSerializer(serializers.ModelSerializer):

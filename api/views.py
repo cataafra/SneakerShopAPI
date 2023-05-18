@@ -173,13 +173,13 @@ class UserProfileList(generics.ListCreateAPIView):
     serializer_class = UserProfileSerializer
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [IsOwnerOrReadOnly]
+    #permission_classes = [IsOwnerOrReadOnly]
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
     def get_object(self):
         username = self.kwargs.get("username")
-        obj = get_object_or_404(UserProfile, user__username=username)
+        obj = UserProfile.objects.filter(user_id=username)[0]
         return obj
 
 class UserRegistrationView(generics.CreateAPIView):

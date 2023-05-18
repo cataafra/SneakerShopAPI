@@ -19,9 +19,6 @@ class UserProfile(models.Model):
                             default="regular")
     page_size = models.IntegerField(choices=((12, 12), (36, 36), (60, 60), (120, 120)), default=12)
 
-    def __str__(self):
-        return self.user.username
-
 class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     country_of_origin = models.CharField(max_length=100)
